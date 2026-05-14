@@ -84,6 +84,20 @@ const fileToBase64 = (file: File) => {
   });
 };
 
+const readApiJson = async (response: Response) => {
+  const rawText = await response.text();
+
+  try {
+    return rawText ? JSON.parse(rawText) : {};
+  } catch {
+    const preview = rawText.replace(/\s+/g, ' ').slice(0, 180);
+    throw new Error(
+      `Backend returned HTML/non-JSON (${response.status}). ` +
+      `Check that backend is running on ${API_URL}. Preview: ${preview || 'empty response'}`
+    );
+  }
+};
+
 function AIResumeAnalyserPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -152,7 +166,7 @@ function AIResumeAnalyserPage() {
         })
       });
 
-      const data = await response.json();
+      const data = await readApiJson(response);
       if (!response.ok) {
         throw new Error(data.error || 'Failed to analyze resume.');
       }

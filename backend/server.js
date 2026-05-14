@@ -134,6 +134,45 @@ const parseGeminiJson = (text) => {
   }
 };
 
+const readJsonResponse = async (response, sourceName) => {
+  const rawText = await response.text();
+
+  try {
+    return rawText ? JSON.parse(rawText) : {};
+  } catch {
+    const preview = rawText
+      .replace(/\s+/g, ' ')
+      .slice(0, 220);
+
+    throw new Error(
+      `${sourceName} returned non-JSON response (${response.status} ${response.statusText}). ` +
+      `Preview: ${preview || 'empty response'}`
+    );
+  }
+};
+
+const toGeminiJsonSchema = (schema) => {
+  if (Array.isArray(schema)) {
+    return schema.map(toGeminiJsonSchema);
+  }
+
+  if (!schema || typeof schema !== 'object') {
+    return schema;
+  }
+
+  const converted = {};
+
+  for (const [key, value] of Object.entries(schema)) {
+    if (key === 'type' && typeof value === 'string') {
+      converted[key] = value.toLowerCase();
+    } else {
+      converted[key] = toGeminiJsonSchema(value);
+    }
+  }
+
+  return converted;
+};
+
 app.get("/", (req, res)=>{
     res.send("Welcome to the backend of catalyst path")
 })
@@ -189,14 +228,14 @@ app.post('/api/analyze-resume', async (req, res) => {
           ],
           generationConfig: {
             temperature: 0.2,
-            response_mime_type: 'application/json',
-            response_schema: analysisSchema
+            responseMimeType: 'application/json',
+            responseJsonSchema: toGeminiJsonSchema(analysisSchema)
           }
         })
       }
     );
 
-    const data = await response.json();
+    const data = await readJsonResponse(response, 'Gemini API');
     if (!response.ok) {
       return res.status(response.status).json({
         error: data?.error?.message || 'Gemini API request failed.'
