@@ -3,10 +3,11 @@
 "use client"
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaHome, FaCode, FaFileAlt, FaBrain, FaSignOutAlt, FaBars, FaTimes, FaExternalLinkAlt, FaMapMarkerAlt, FaClock, FaRocket, FaBuilding } from 'react-icons/fa';
+import { FaHome, FaCode, FaFileAlt, FaBrain, FaSignOutAlt, FaBars, FaTimes, FaExternalLinkAlt, FaMapMarkerAlt, FaClock, FaRocket, FaBuilding, FaSearch, FaBriefcase, FaGraduationCap, FaChartLine } from 'react-icons/fa';
 
 function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const internships = [
     {
@@ -219,51 +220,93 @@ function HomePage() {
     { icon: <FaSignOutAlt className="w-5 h-5" />, label: "Log Out", path: "/login" }
   ];
 
+  const filteredInternships = internships.filter((internship) => {
+    const searchText = `${internship.company} ${internship.role} ${internship.location}`.toLowerCase();
+    return searchText.includes(searchQuery.trim().toLowerCase());
+  });
+
+  const dashboardStats = [
+    { icon: <FaBriefcase className="w-5 h-5" />, label: "Open roles", value: internships.length, accent: "from-sky-500 to-blue-600" },
+    { icon: <FaBuilding className="w-5 h-5" />, label: "Top companies", value: "20+", accent: "from-violet-500 to-fuchsia-600" },
+    { icon: <FaGraduationCap className="w-5 h-5" />, label: "Student ready", value: "100%", accent: "from-emerald-500 to-teal-600" },
+    { icon: <FaChartLine className="w-5 h-5" />, label: "Avg duration", value: "12 wk", accent: "from-amber-500 to-orange-600" }
+  ];
+
+  const featuredCompanies = internships.slice(0, 6);
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-950 lg:flex">
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`fixed lg:sticky inset-y-0 left-0 top-0 z-50 h-screen w-72 flex-shrink-0 border-r border-white/10 bg-slate-950/95 backdrop-blur-xl transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center gap-2">
-              <div className="border-1 rounded-lg flex items-center justify-center">
-                <img src="images/logo.png" className='w-14 h-10'/>
+          <div className="p-5 sm:p-6 border-b border-white/10">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-blue-500/10 overflow-hidden">
+                  <img src="/images/logo.png" className="h-9 w-10 object-contain" />
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-lg font-black text-white truncate">CatalystPath</span>
+                  <span className="block text-xs font-medium text-slate-400">Career cockpit</span>
+                </div>
               </div>
-              <span className="text-xl font-bold text-gray-900">CatalystPath</span>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden rounded-xl p-2 text-slate-400 hover:bg-white/10 hover:text-white"
+                aria-label="Close menu"
+              >
+                <FaTimes className="h-5 w-5" />
+              </button>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4">
+          <nav className="flex-1 p-4 sm:p-5">
             <ul className="space-y-2">
               {menuItems.map((item, index) => (
                 <li key={index}>
                   <a
                     href={item.path}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition-all ${
                       item.label === "Home"
-                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-white text-slate-950 shadow-xl shadow-blue-500/10"
+                        : "text-slate-300 hover:bg-white/10 hover:text-white"
                     }`}
                   >
                     {item.icon}
-                    <span className="font-medium">{item.label}</span>
+                    <span>{item.label}</span>
                   </a>
                 </li>
               ))}
             </ul>
           </nav>
 
+          <div className="mx-5 mb-4 rounded-3xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="flex items-center gap-3 text-white">
+              <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-sky-500 to-violet-600">
+                <FaRocket className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-sm font-black">Daily target</p>
+                <p className="text-xs text-slate-400">Apply to 3 roles today</p>
+              </div>
+            </div>
+            <div className="mt-4 h-2 rounded-full bg-white/10">
+              <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-sky-400 to-violet-500" />
+            </div>
+          </div>
+
           {/* User Profile */}
-          <div className="p-4 border-t border-gray-200">
-            <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-lg">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+          <div className="p-4 border-t border-white/10">
+            <div className="flex items-center gap-3 rounded-2xl bg-white/[0.06] px-4 py-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-black">
                 S
               </div>
-              <div className="flex-1">
-                <p className="font-semibold text-gray-900 text-sm">Student</p>
-                <p className="text-xs text-gray-500">student1@gmail.com</p>
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-white text-sm">Student</p>
+                <p className="text-xs text-slate-400 truncate">student1@gmail.com</p>
               </div>
             </div>
           </div>
@@ -273,82 +316,158 @@ function HomePage() {
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="min-w-0 flex-1 bg-gradient-to-br from-slate-50 via-white to-blue-50">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-          <div className="px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden text-gray-600 hover:text-gray-900"
+                className="lg:hidden rounded-2xl border border-slate-200 bg-white p-3 text-slate-700 shadow-sm hover:border-slate-300"
+                aria-label="Open menu"
               >
-                {sidebarOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
+                <FaBars className="w-5 h-5" />
               </button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Current Internships</h1>
-                <p className="text-sm text-gray-600">Explore opportunities from top companies</p>
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-600">Home</p>
+                <h1 className="truncate text-xl font-black text-slate-950 sm:text-2xl">Internship Dashboard</h1>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-semibold text-sm">
-                {internships.length} Opportunities
+            <div className="hidden items-center gap-3 sm:flex">
+              <span className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-black text-blue-700">
+                {filteredInternships.length} matching
               </span>
             </div>
           </div>
         </header>
 
-        {/* Internships Grid */}
-        <main className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {internships.map((internship, index) => (
+        <main className="px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+          <div className="mx-auto max-w-7xl space-y-6 sm:space-y-8">
+            <section className="relative overflow-hidden rounded-[2rem] bg-slate-950 px-5 py-7 text-white shadow-2xl shadow-blue-900/20 sm:px-8 sm:py-10 lg:px-10">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.35),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.28),transparent_35%)]" />
+              <div className="relative grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+                <div>
+                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-xs font-bold text-sky-100">
+                    <FaRocket className="h-3.5 w-3.5" />
+                    Placement season ready
+                  </div>
+                  <h2 className="max-w-3xl text-3xl font-black leading-tight sm:text-4xl lg:text-5xl">
+                    Welcome back, find your next internship faster.
+                  </h2>
+                  <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+                    Curated roles from top product companies, organized so you can scan, shortlist, and apply without getting lost.
+                  </p>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur">
+                  <p className="text-sm font-bold text-slate-200">Featured companies</p>
+                  <div className="mt-4 grid grid-cols-3 gap-3">
+                    {featuredCompanies.map((company) => (
+                      <div key={company.id} className="grid aspect-square place-items-center rounded-2xl bg-white p-3">
+                        <img src={company.logo} alt={company.company} className="max-h-10 max-w-full object-contain" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {dashboardStats.map((stat) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-bold text-slate-500">{stat.label}</p>
+                      <p className="mt-1 text-2xl font-black text-slate-950">{stat.value}</p>
+                    </div>
+                    <div className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${stat.accent} text-white shadow-lg`}>
+                      {stat.icon}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </section>
+
+            <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <h2 className="text-xl font-black text-slate-950 sm:text-2xl">Current Internships</h2>
+                  <p className="mt-1 text-sm text-slate-500">Explore opportunities from top companies</p>
+                </div>
+                <div className="relative w-full lg:max-w-md">
+                  <FaSearch className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Search company, role, or location"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm font-semibold text-slate-800 outline-none transition focus:border-blue-300 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {filteredInternships.map((internship, index) => (
                 <motion.div
                   key={internship.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all border border-gray-200 overflow-hidden group"
+                  whileHover={{ y: -6 }}
+                  className="group flex min-h-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all hover:border-blue-200 hover:shadow-xl hover:shadow-blue-900/10"
                 >
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-white rounded-lg border border-gray-200 p-2 flex items-center justify-center">
-                          <img src={internship.logo} alt={internship.company} className="w-full h-full object-contain" />
+                  <div className="flex flex-1 flex-col p-5 sm:p-6">
+                    <div className="mb-5 flex items-start justify-between gap-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="grid h-14 w-14 flex-shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
+                          <img src={internship.logo} alt={internship.company} className="max-h-10 max-w-full object-contain" />
                         </div>
-                        <div>
-                          <h3 className="font-bold text-gray-900 text-lg">{internship.company}</h3>
-                          <div className="flex items-center gap-1 text-gray-500 text-xs mt-1">
-                            <FaBuilding className="w-3 h-3" />
-                            <span>Tech Company</span>
-                          </div>
+                        <div className="min-w-0">
+                          <h3 className="truncate text-lg font-black text-slate-950">{internship.company}</h3>
+                          <p className="mt-1 flex items-center gap-1.5 text-xs font-bold text-slate-500">
+                            <FaBuilding className="w-3 h-3 text-blue-500" />
+                            Tech Company
+                          </p>
                         </div>
                       </div>
+                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                        Open
+                      </span>
                     </div>
 
-                    <h4 className="font-semibold text-gray-800 mb-3">{internship.role}</h4>
+                    <h4 className="mb-4 min-h-12 text-base font-black leading-6 text-slate-800 sm:text-lg">{internship.role}</h4>
 
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <FaMapMarkerAlt className="w-4 h-4 text-blue-600" />
-                        <span>{internship.location}</span>
+                    <div className="mb-5 space-y-3">
+                      <div className="flex items-center gap-3 text-sm font-semibold text-slate-600">
+                        <span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-50 text-blue-600">
+                          <FaMapMarkerAlt className="w-4 h-4" />
+                        </span>
+                        <span className="min-w-0 truncate">{internship.location}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <FaClock className="w-4 h-4 text-blue-600" />
+                      <div className="flex items-center gap-3 text-sm font-semibold text-slate-600">
+                        <span className="grid h-9 w-9 place-items-center rounded-xl bg-violet-50 text-violet-600">
+                          <FaClock className="w-4 h-4" />
+                        </span>
                         <span>{internship.duration}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold">
+                    <div className="mb-5 flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">
                         {internship.type}
                       </span>
-                      <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
+                      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-blue-700">
                         Remote Available
                       </span>
                     </div>
@@ -357,14 +476,21 @@ function HomePage() {
                       href={internship.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-black   to-black text-white rounded-lg font-semibold hover:shadow-lg transition-all group-hover:scale-105"
+                      className="mt-auto flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white transition-all hover:bg-blue-700"
                     >
                       Apply Now <FaExternalLinkAlt className="w-4 h-4" />
                     </a>
                   </div>
                 </motion.div>
               ))}
-            </div>
+
+              {filteredInternships.length === 0 && (
+                <div className="col-span-full rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
+                  <p className="text-lg font-black text-slate-900">No internships found</p>
+                  <p className="mt-2 text-sm text-slate-500">Try another company, role, or location.</p>
+                </div>
+              )}
+            </section>
           </div>
         </main>
       </div>
