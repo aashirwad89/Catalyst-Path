@@ -3,7 +3,7 @@
 "use client"
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaHome, FaCode, FaFileAlt, FaBrain, FaSignOutAlt, FaBars, FaTimes, FaExternalLinkAlt, FaMapMarkerAlt, FaClock, FaRocket, FaBuilding, FaSearch, FaBriefcase, FaGraduationCap, FaChartLine } from 'react-icons/fa';
+import { FaHome, FaCode, FaFileAlt, FaBrain, FaSignOutAlt, FaBars, FaTimes, FaExternalLinkAlt, FaMapMarkerAlt, FaClock, FaRocket, FaBuilding, FaSearch, FaBriefcase, FaGraduationCap, FaChartLine, FaRoute } from 'react-icons/fa';
 
 function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -214,6 +214,7 @@ function HomePage() {
 
   const menuItems = [
     { icon: <FaHome className="w-5 h-5" />, label: "Home", path: "/home" },
+    { icon: <FaRoute className="w-5 h-5" />, label: "Career Roadmap", path: "/career-roadmap" },
     { icon: <FaCode className="w-5 h-5" />, label: "DSA Interview", path: "/dsa" },
     { icon: <FaFileAlt className="w-5 h-5" />, label: "Resume Builder", path: "/resume" },
     { icon: <FaBrain className="w-5 h-5" />, label: "AI Resume Analyser", path: "/ai-analyser" },

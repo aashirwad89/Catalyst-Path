@@ -12,6 +12,7 @@ import {
   FaBars,
   FaTimes,
   FaRocket,
+  FaRoute,
   FaFilter,
   FaSearch,
   FaCheckCircle,
@@ -86,6 +87,7 @@ function DSAPage() {
 
   const menuItems = [
     { icon: <FaHome className="w-5 h-5" />, label: "Home", path: "/home" },
+    { icon: <FaRoute className="w-5 h-5" />, label: "Career Roadmap", path: "/career-roadmap" },
     { icon: <FaCode className="w-5 h-5" />, label: "DSA Interview", path: "/dsa" },
     { icon: <FaFileAlt className="w-5 h-5" />, label: "Resume Builder", path: "/resume" },
     { icon: <FaBrain className="w-5 h-5" />, label: "AI Resume Analyser", path: "/ai-analyser" },
