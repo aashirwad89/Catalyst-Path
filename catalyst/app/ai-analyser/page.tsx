@@ -175,7 +175,13 @@ function AIResumeAnalyserPage() {
       setAnalysis(data.analysis);
       setModel(data.model || '');
     } catch (analysisError) {
-      setError(analysisError instanceof Error ? analysisError.message : 'Failed to analyze resume.');
+      if (analysisError instanceof TypeError && analysisError.message === 'Failed to fetch') {
+        setError(
+          `Could not reach backend. Check NEXT_PUBLIC_API_URL (${API_URL}) and backend CLIENT_ORIGIN CORS settings.`
+        );
+      } else {
+        setError(analysisError instanceof Error ? analysisError.message : 'Failed to analyze resume.');
+      }
     } finally {
       setIsAnalyzing(false);
     }

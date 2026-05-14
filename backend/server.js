@@ -5,20 +5,39 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+
+const normalizeOrigin = (origin) => {
+  if (!origin) return '';
+
+  try {
+    const parsedOrigin = new URL(origin.trim());
+    return parsedOrigin.origin.toLowerCase();
+  } catch {
+    return origin.trim().replace(/\/+$/, '').toLowerCase();
+  }
+};
+
 const allowedOrigins = process.env.CLIENT_ORIGIN
-  ? process.env.CLIENT_ORIGIN.split(',').map((origin) => origin.trim()).filter(Boolean)
+  ? process.env.CLIENT_ORIGIN.split(',').map(normalizeOrigin).filter(Boolean)
   : [];
 
-app.use(cors({
+const corsOptions = {
   origin(origin, callback) {
-    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+    const normalizedOrigin = normalizeOrigin(origin);
+
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(normalizedOrigin)) {
       callback(null, true);
       return;
     }
 
     callback(new Error(`CORS blocked origin: ${origin}`));
-  }
-}));
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 
 app.use((req, _res, next) => {
   const [path, query] = req.url.split('?');
@@ -197,6 +216,14 @@ app.get("/", (req, res)=>{
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, model: GEMINI_MODEL });
+});
+
+app.get('/api/cors-check', (req, res) => {
+  res.json({
+    ok: true,
+    requestOrigin: req.get('origin') || null,
+    allowedOrigins
+  });
 });
 
 
