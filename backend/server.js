@@ -134,9 +134,14 @@ const parseGeminiJson = (text) => {
   }
 };
 
+app.get("/", (req, res)=>{
+    res.send("Welcome to the backend of catalyst path")
+})
+
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, model: GEMINI_MODEL });
 });
+
 
 app.post('/api/analyze-resume', async (req, res) => {
   try {

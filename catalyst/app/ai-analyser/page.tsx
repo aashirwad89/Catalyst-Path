@@ -64,7 +64,7 @@ interface ResumeAnalysis {
   actionPlan: ActionItem[];
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://catalyst-path.onrender.com/';
 
 const scoreTone = (score: number) => {
   if (score >= 80) return 'text-green-700 bg-green-50 border-green-200';
